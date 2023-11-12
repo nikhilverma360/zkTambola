@@ -9,7 +9,7 @@ import {
 //   RandomNumbersWitness,
 //   createRandomNumbersMerkleTree,
 // } from './utils.js';
-import { Mina, PrivateKey, AccountUpdate, CircuitString } from 'o1js';
+import { Mina, PrivateKey, AccountUpdate, CircuitString, Field } from 'o1js';
 
 const useProof = false;
 const Local = Mina.LocalBlockchain({ proofsEnabled: useProof });
@@ -34,12 +34,12 @@ const deployTxn = await Mina.transaction(deployerAccount, () => {
 await deployTxn.sign([deployerKey, zkAppPrivateKey]).send();
 
 const commitment1 = zkAppInstance.commitmentRandomnumbers.get();
-console.log('commitment state after init:', commitment1.toString());
+console.log('Root after init:', commitment1.toString());
 // ----------------------------------------------------
 
-//                The Transaction
+//                The Transaction 1 
 // ----------------------------------------------------
-
+console.log('----------Initiating Transaction 1---------------')
 const randomNumbersTree = createRandomNumbersMerkleTree();
 let w = randomNumbersTree.getWitness(BigInt(0));
 let witness = new RandomNumbersWitness(w);
@@ -58,6 +58,28 @@ await txn1.prove();
 let time1 = Date.now();
 console.log('creating proof took', (time1 - time0) / 1e3, 'seconds');
 await txn1.sign([senderKey]).send();
+
+console.log('after transaction : ', txn1.toPretty());
+
+// ----------------------------------------------------
+
+// ----------------------------------------------------
+
+//                The Transaction 2 
+// ----------------------------------------------------
+console.log('----------Initiating Transaction 2---------------')
+const txn2 = await Mina.transaction(senderAccount, () => {
+  zkAppInstance.updateRandomList(
+    Field(randomNumbersTree.getRoot()),
+  );
+});
+
+console.log('Creating an execution proof...');
+let time2 = Date.now();
+await txn2.prove();
+let time3 = Date.now();
+console.log('creating proof took', (time2 - time3) / 1e3, 'seconds');
+await txn2.sign([senderKey]).send();
 
 console.log('after transaction : ', txn1.toPretty());
 
