@@ -27,7 +27,7 @@ export class RandomNumber extends CircuitValue {
 }
 
 export function createRandomNumbersMerkleTree() {
-  //generates the merkle tree from the list of nft holders
+  
   for (let i in random_numbers) {
     let thisNumber = new RandomNumber(
       CircuitString.fromString(random_numbers[i])

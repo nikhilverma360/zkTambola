@@ -44,7 +44,7 @@ const randomNumbersTree = createRandomNumbersMerkleTree();
 let w = randomNumbersTree.getWitness(BigInt(0));
 let witness = new RandomNumbersWitness(w);
 const txn1 = await Mina.transaction(senderAccount, () => {
-  zkAppInstance.validateNFTHolder(
+  zkAppInstance.validateRandomNumber(
     new RandomNumber(
       CircuitString.fromString('0x00bd58530a64b04f552f2f6a8319e91d70f6b12b')
     ),
