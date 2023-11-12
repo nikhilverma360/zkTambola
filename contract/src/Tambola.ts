@@ -31,7 +31,6 @@ export class RandomNumber extends CircuitValue {
 }
 
 export function createRandomNumbersMerkleTree() {
- 
   for (let i in random_numbers) {
     let thisNumber = new RandomNumber(
       CircuitString.fromString(random_numbers[i])
@@ -51,6 +50,12 @@ export class Tambola extends SmartContract {
 
     //store the root of the merkle tree in the app state
     this.commitmentRandomnumbers.set(createRandomNumbersMerkleTree().getRoot());
+  }
+  @method updateRandomList(RandomListRoot: Field) {
+    let commitment = this.commitmentRandomnumbers.get();
+    this.commitmentRandomnumbers.assertEquals(commitment);
+
+    this.commitmentRandomnumbers.set(RandomListRoot);
   }
 
   @method validateRandomNumber(
